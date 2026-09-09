@@ -72,29 +72,13 @@ bladder <- FindNeighbors(bladder, dims = 1:30)
 bladder <- FindClusters(bladder,resolution = 0.8)
 bladder <- RunUMAP(bladder,dims = 1:30)
 # 查看聚类结果
-DimPlot(
-  bladder,
-  reduction = "umap",
-  group.by = "seurat_clusters",
-  label = TRUE
-)
+DimPlot(bladder, reduction = "umap", group.by = "seurat_clusters", label = TRUE)
 # 查看样本是否被批次效应主导
-DimPlot(
-  bladder,
-  reduction = "umap",
-  group.by = "sample_id"
-)
+DimPlot(bladder, reduction = "umap", group.by = "sample_id")
 # 查看肿瘤和正常组织分布
-DimPlot(
-  bladder,
-  reduction = "umap",
-  group.by = "tissue"
-)
+DimPlot(bladder, reduction = "umap", group.by = "tissue")
 # 保存当前对象
-saveRDS(
-  bladder,
-  "03.seurat/bladder_clustered.rds"
-)
+saveRDS(bladder, "03.seurat/bladder_clustered.rds")
 # 找各聚类的标记基因。注意这里要切换回 RNA assay，因为差异表达应使用原始/标准化表达数据，不用 integrated assay
 DefaultAssay(bladder) <- "RNA"
 
