@@ -81,21 +81,8 @@ DimPlot(bladder, reduction = "umap", group.by = "tissue")
 saveRDS(bladder, "03.seurat/bladder_clustered.rds")
 # 找各聚类的标记基因。注意这里要切换回 RNA assay，因为差异表达应使用原始/标准化表达数据，不用 integrated assay
 DefaultAssay(bladder) <- "RNA"
-
-bladder <- NormalizeData(
-  bladder,
-  normalization.method = "LogNormalize",
-  scale.factor = 10000,
-  verbose = FALSE
-)
-
-markers <- FindAllMarkers(
-  bladder,
-  only.pos = TRUE,
-  min.pct = 0.25,
-  logfc.threshold = 0.25
-)
-
+bladder <- NormalizeData(bladder, normalization.method = "LogNormalize", scale.factor = 10000, verbose = FALSE)
+markers <- FindAllMarkers(bladder, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25)
 head(markers)
 colnames(markers)
 # 查看每个 cluster 的前 10 个 marker
