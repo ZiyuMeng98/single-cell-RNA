@@ -85,25 +85,14 @@ bladder <- NormalizeData(bladder, normalization.method = "LogNormalize", scale.f
 markers <- FindAllMarkers(bladder, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25)
 head(markers)
 colnames(markers)
-# 查看每个 cluster 的前 10 个 marker
-top20_markers <- markers %>%
-  group_by(cluster) %>%
-  slice_max(
-    order_by = avg_log2FC,
-    n = 20
-  ) %>%
-  ungroup()
-
+# 查看每个 cluster 的前 20 个 marker
+library(dplyr)
+top20_markers <- markers %>% group_by(cluster) %>% slice_max(order_by = avg_log2FC, n = 20) %>% ungroup()
 top20_markers
 # 只看基因名
-top20_markers %>%
-  select(cluster, gene, avg_log2FC, pct.1, p_val_adj)
+top20_markers %>% select(cluster, gene, avg_log2FC, pct.1, p_val_adj)
 # 绘制 marker 热图
-DoHeatmap(
-  bladder,
-  features = unique(top20_markers$gene),
-  group.by = "seurat_clusters"
-)
+DoHeatmap(bladder, features = unique(top20_markers$gene), group.by = "seurat_clusters")
 # 导出
 write.csv(
   top20_markers,
