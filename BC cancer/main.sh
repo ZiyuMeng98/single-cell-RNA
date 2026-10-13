@@ -116,34 +116,16 @@ DefaultAssay(bladder) <- "RNA"
 table(bladder$seurat_clusters)
 levels(bladder$seurat_clusters)
 # 保留表达矩阵中真实存在的基因
-marker_list <- lapply(
-  marker_list,
-  function(x) {
-    intersect(x, rownames(bladder))
-  }
-)
+marker_list <- lapply(marker_list, function(x) {intersect(x, rownames(bladder))})
 sapply(marker_list, length)
 # 查看各 cluster 的 marker
-DotPlot(
-  bladder,
-  features = marker_list,
-  group.by = "seurat_clusters",
-  dot.scale = 6
+DotPlot(bladder, features = marker_list, group.by = "seurat_clusters", dot.scale = 6
 ) +
   RotatedAxis()
 # 保存图
-pdf(
-  "03.seurat/major_celltype_markers.pdf",
-  width = 18,
-  height = 10
-)
+pdf("03.seurat/major_celltype_markers.pdf", width = 18, height = 10)
 
-print(
-  DotPlot(
-    bladder,
-    features = marker_list,
-    group.by = "seurat_clusters",
-    dot.scale = 6
+print(DotPlot(bladder, features = marker_list, group.by = "seurat_clusters", dot.scale = 6
   ) +
     RotatedAxis()
 )
