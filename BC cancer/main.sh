@@ -1,4 +1,4 @@
-# 使用cellranger生成表达矩阵，生成后导入R语言Seruat库进行分析
+  # 使用cellranger生成表达矩阵，生成后导入R语言Seruat库进行分析
 bash srr_to_fq.sh 2>&1 | tee -a srr_to_fq.log
 bash cellranger.sh 2>&1 | tee -a cellranger.log
 # R语言Seruat库
@@ -151,13 +151,9 @@ print(
 dev.off()
 # 查看每个 cluster 的真实差异基因
 DefaultAssay(bladder) <- "RNA"
+bladder <- JoinLayers(bladder, assay = "RNA")
 
-markers <- FindAllMarkers(
-  bladder,
-  only.pos = TRUE,
-  min.pct = 0.25,
-  logfc.threshold = 0.25
-)
+markers <- FindAllMarkers(bladder, assay = "RNA", only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25)
 # 查看每个 cluster 前 20 个 marker
 library(dplyr)
 
