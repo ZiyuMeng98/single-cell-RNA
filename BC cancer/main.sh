@@ -184,8 +184,6 @@ FeaturePlot(
 # COL1A1 + PDGFRA + CXCL12	    iCAF 倾向
 # COL1A1 + RGS5 + ACTA2 + TAGLN	mCAF 倾向
 
-
-
 # 建立 cluster 注释表
 cluster_annotation <- data.frame(
   cluster = levels(bladder$seurat_clusters),
