@@ -70,3 +70,54 @@ features <- SelectIntegrationFeatures(object.list = objects, nfeatures = 3000)
 anchors <- FindIntegrationAnchors(object.list = objects, anchor.features = features, dims = 1:30)
 bladder <- IntegrateData(anchorset = anchors, dims = 1:30)
 saveRDS(bladder, "03.seurat/bladder_integrated_raw.rds")
+##############################################################################
+# 4. PCA、邻居图、聚类和 UMAP
+##############################################################################
+DefaultAssay(bladder) <- "integrated"
+bladder <- ScaleData(bladder, verbose = FALSE)
+bladder <- RunPCA(bladder, npcs = 30,verbose = FALSE)
+pdf("03.seurat/elbowplot.pdf", width = 6, height = 5)
+
+print(ElbowPlot( bladder, ndims = 30))
+dev.off()
+bladder <- FindNeighbors(bladder, dims = 1:30)
+bladder <- FindClusters(bladder, resolution = 0.8)
+bladder <- RunUMAP(bladder, dims = 1:30)
+pdf("03.seurat/umap_clusters.pdf", width = 8, height = 7)
+print(DimPlot(bladder, reduction = "umap", group.by = "seurat_clusters", label = TRUE))
+dev.off()
+pdf("03.seurat/umap_sample.pdf", width = 8, height = 7)
+print(DimPlot(bladder, reduction = "umap", group.by = "sample_id"))
+dev.off()
+pdf("03.seurat/umap_tissue.pdf", width = 8, height = 7)
+print(DimPlot(bladder, reduction = "umap", group.by = "tissue"))
+dev.off()
+saveRDS(bladder, "03.seurat/bladder_clustered.rds")
+##############################################################################
+# 5. 查找每个 cluster 的 marker
+##############################################################################
+DefaultAssay(bladder) <- "RNA"
+# Seurat v5 中，差异表达前合并 RNA layers
+bladder <- JoinLayers(bladder, assay = "RNA")
+bladder <- NormalizeData(bladder, normalization.method = "LogNormalize", scale.factor = 10000, verbose = FALSE)
+markers <- FindAllMarkers(bladder, assay = "RNA", only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25)
+
+top20_markers <- markers %>%
+  group_by(cluster) %>%
+  slice_max(
+    order_by = avg_log2FC,
+    n = 20
+  ) %>%
+  ungroup()
+
+write.csv(
+  markers,
+  "03.seurat/all_cluster_markers.csv",
+  row.names = FALSE
+)
+
+write.csv(
+  top20_markers,
+  "03.seurat/top20_markers_each_cluster.csv",
+  row.names = FALSE
+)
